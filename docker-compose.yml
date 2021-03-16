@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  ts-node-docker:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    container_name: ts-node-docker
+    expose:
+      - "7000"
+    ports:
+      - "7000:7000"
+    command: npm run dev
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
