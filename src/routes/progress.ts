@@ -1,10 +1,11 @@
 import * as Express from "express";
-import { Task } from "../models/task-model";
+import { forEachChild } from "typescript";
+import { Task, taskSchema } from "../models/task-model";
 
 const router = Express.Router();
 
-router.route("/").get((req, res) => {
-  Task.find()
+router.route("/").put((req, res) => {
+  Task.find({ user: req.body.user })
     .then((task) => res.json(task))
     .catch((err) => res.status(400).json("Error:" + err));
 });
@@ -12,9 +13,11 @@ router.route("/").get((req, res) => {
 router.route("/").post((req, res) => {
   const title = req.body.title;
   const completed = req.body.completed;
+  const user = req.body.user;
   const newTask = new Task({
-    title: title,
     completed: completed,
+    title: title,
+    user: user,
   });
 
   newTask
@@ -28,6 +31,21 @@ router.route("/:id").get((req, res) => {
     .then((task) => res.json(task))
     .catch((err) => res.status(400).json("Error:" + err));
 });
+
+router.route("/:id").post((req, res) => {
+  Task.updateOne({ _id: req.params.id }, { $push: { child: req.body.child } })
+    .then(() => res.json("task added"))
+    .catch((err) => res.status(400).json("Error" + err));
+});
+
+// router.route("/:id").post((req, res) => {
+//   Task
+//     .find({})
+//     .populate({path: "child._id", model: "Task"})
+//     .updateOne({ _id: req.params.id }, { $push: { child: req.body.child } })
+//     .then(() => res.json("task added"))
+//     .catch((err) => res.status(400).json("Error" + err));
+// });
 
 router.route("/:id").delete((req, res) => {
   Task.findByIdAndDelete(req.params.id)

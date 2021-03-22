@@ -43,3 +43,10 @@ https://github.com/wizeobara/redux-todo
 ## PORTS
 
 Port: 7000; Mongo Port: 27017
+
+## START
+
+```
+npm install
+npm run dev
+```
